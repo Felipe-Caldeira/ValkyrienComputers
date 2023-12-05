@@ -53,6 +53,13 @@ class ShipReaderPeripheral(private val level: Level, private val pos: BlockPos) 
         return getVectorAsTable(vel)
     }
 
+    @LuaFunction
+    @Throws(LuaException::class)
+    fun getOmega(): MutableMap<Any, Any> {
+        val omega = isEnabledAndOnShip(pos)?.omega ?: throw LuaException("Not on a Ship")
+        return getVectorAsTable(omega)
+    }
+
     @Throws(LuaException::class)
     @LuaFunction
     fun getWorldspacePosition() : MutableMap<Any, Any> {
@@ -82,6 +89,17 @@ class ShipReaderPeripheral(private val level: Level, private val pos: BlockPos) 
                 Pair("x", aabb.maxX() - aabb.minX()),
                 Pair("y", aabb.maxY() - aabb.minY()),
                 Pair("z", aabb.maxZ() - aabb.minZ())
+        )
+    }
+
+    @Throws(LuaException::class)
+    @LuaFunction
+    fun getMomentOfInertiaTensor(): List<List<Double>> {
+        val it = isEnabledAndOnShip(pos)?.inertiaData?.momentOfInertiaTensorToSave ?: throw LuaException("Not on a Ship")
+        return listOf(
+            listOf(it.m00(), it.m01(), it.m02()),
+            listOf(it.m10(), it.m11(), it.m12()),
+            listOf(it.m20(), it.m21(), it.m22())
         )
     }
 
